@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>聚星工作台 - 历史相似工单 UI设计稿</title>
+<style>
+ @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+ * { margin: 0; padding: 0; box-sizing: border-box; }
+
+ body {
+ font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+ background: #f0f2f5;
+ color: #333;
+ display: flex;
+ justify-content: center;
+ padding: 40px 20px;
+ min-height: 100vh;
+ }
+
+ .mockup-wrapper {
+ width: 1440px;
+ background: #fff;
+ border-radius: 8px;
+ box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+ overflow: hidden;
+ }
+
+ .top-bar {
+ height: 48px;
+ background: linear-gradient(90deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+ display: flex;
+ align-items: center;
+ padding: 0 24px;
+ position: relative;
+ }
+
+ .top-bar::after {
+ content: '';
+ position: absolute;
+ bottom: 0;
+ left: 0;
+ right: 0;
+ height: 1px;
+ background: rgba(255,255,255,0.06);
+ }
+
+ .logo {
+ color: #fff;
+ font-size: 15px;
+ font-weight: 600;
+ letter-spacing: 2px;
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ }
+
+ .logo-icon {
+ width: 24px;
+ height: 24px;
+ background: linear-gradient(135deg, #e94560, #ff6b6b);
+ border-radius: 6px;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-size: 14px;
+ }
+
+ .top-bar-nav {
+ margin-left: 48px;
+ display: flex;
+ gap: 32px;
+ }
+
+ .top-bar-nav span {
+ color: rgba(255,255,255,0.6);
+ font-size: 13px;
+ cursor: pointer;
+ transition: color 0.2s;
+ }
+
+ .top-bar-nav span.active {
+ color: #fff;
+ }
+
+ .top-bar-right {
+ margin-left: auto;
+ display: flex;
+ align-items: center;
+ gap: 20px;
+ }
+
+ .avatar {
+ width: 28px;
+ height: 28px;
+ border-radius: 50%;
+ background: linear-gradient(135deg, #667eea, #764ba2);
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ color: #fff;
+ font-size: 12px;
+ font-weight: 500;
+ }
+
+ .breadcrumb {
+ height: 40px;
+ background: #fafbfc;
+ border-bottom: 1px solid #e8e8e8;
+ display: flex;
+ align-items: center;
+ padding: 0 24px;
+ font-size: 12px;
+ color: #999;
+ gap: 8px;
+ }
+
+ .breadcrumb span.current { color: #333; }
+
+ .main-content {
+ display: flex;
+ min-height: 780px;
+ }
+
+ /* ===== 左侧工单详情 ===== */
+ .ticket-detail {
+ flex: 1;
+ display: flex;
+ flex-direction: column;
+ border-right: 1px solid #e8e8e8;
+ background: #fafbfc;
+ overflow: hidden;
+ }
+
+ .ticket-scroll {
+ flex: 1;
+ overflow-y: auto;
+ padding: 24px;
+ }
+
+ .ticket-header {
+ display: flex;
+ align-items: flex-start;
+ gap: 16px;
+ margin-bottom: 20px;
+ }
+
+ .ticket-id-badge {
+ background: #e8f4fd;
+ color: #1890ff;
+ font-size: 12px;
+ padding: 4px 10px;
+ border-radius: 4px;
+ font-weight: 500;
+ white-space: nowrap;
+ }
+
+ .ticket-title {
+ font-size: 18px;
+ font-weight: 600;
+ color: #1a1a2e;
+ line-height: 1.4;
+ }
+
+ .ticket-meta {
+ display: flex;
+ gap: 24px;
+ margin-bottom: 20px;
+ flex-wrap: wrap;
+ }
+
+ .meta-item {
+ font-size: 12px;
+ color: #666;
+ display: flex;
+ align-items: center;
+ gap: 6px;
+ }
+
+ .meta-label { color: #999; }
+
+ .tag {
+ display: inline-block;
+ padding: 2px 8px;
+ border-radius: 3px;
+ font-size: 11px;
+ font-weight: 500;
+ }
+
+ .tag-game { background: #fff7e6; color: #fa8c16; border: 1px solid #ffd591; }
+ .tag-category { background: #f6ffed; color: #52c41a; border: 1px solid #b7eb8f; }
+
+ .ticket-body {
+ background: #fff;
+ border-radius: 6px;
+ border: 1px solid #e8e8e8;
+ padding: 20px;
+ margin-bottom: 16px;
+ }
+
+ .section-title {
+ font-size: 13px;
+ font-weight: 600;
+ color: #333;
+ margin-bottom: 12px;
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ }
+
+ .section-title::before {
+ content: '';
+ width: 3px;
+ height: 14px;
+ background: #1890ff;
+ border-radius: 2px;
+ }
+
+ .ticket-desc {
+ font-size: 13px;
+ color: #555;
+ line-height: 1.8;
+ }
+
+ .chat-history {
+ background: #fff;
+ border-radius: 6px;
+ border: 1px solid #e8e8e8;
+ padding: 20px;
+ }
+
+ .chat-item {
+ display: flex;
+ gap: 12px;
+ margin-bottom: 16px;
+ }
+
+ .chat-item:last-child { margin-bottom: 0; }
+
+ .chat-avatar {
+ width: 32px;
+ height: 32px;
+ border-radius: 50%;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-size: 12px;
+ color: #fff;
+ flex-shrink: 0;
+ }
+
+ .chat-avatar.player { background: linear-gradient(135deg, #52c41a, #73d13d); }
+ .chat-avatar.agent { background: linear-gradient(135deg, #1890ff, #40a9ff); }
+
+ .chat-bubble { flex: 1; max-width: 80%; }
+
+ .chat-name { font-size: 12px; color: #999; margin-bottom: 4px; }
+
+ .chat-content {
+ font-size: 13px;
+ color: #333;
+ line-height: 1.6;
+ padding: 10px 14px;
+ border-radius: 8px;
+ background: #f5f5f5;
+ }
+
+ .chat-item.agent .chat-content { background: #e8f4fd; }
+
+ /* ===== 左侧底部回复区 ===== */
+ .reply-area-left {
+ border-top: 1px solid #e8e8e8;
+ padding: 16px 24px;
+ background: #fff;
+ flex-shrink: 0;
+ }
+
+ .reply-textarea {
+ width: 100%;
+ min-height: 80px;
+ border: 1px solid #d9d9d9;
+ border-radius: 6px;
+ padding: 10px 14px;
+ font-size: 13px;
+ color: #333;
+ resize: vertical;
+ font-family: inherit;
+ line-height: 1.6;
+ transition: border-color 0.2s;
+ }
+
+ .reply-textarea:focus {
+ outline: none;
+ border-color: #1890ff;
+ box-shadow: 0 0 0 2px rgba(24,144,255,0.1);
+ }
+
+ .reply-actions {
+ display: flex;
+ justify-content: flex-end;
+ gap: 8px;
+ margin-top: 10px;
+ }
+
+ .btn {
+ padding: 8px 20px;
+ border-radius: 4px;
+ font-size: 13px;
+ cursor: pointer;
+ border: 1px solid #d9d9d9;
+ background: #fff;
+ color: #555;
+ transition: all 0.2s;
+ }
+
+ .btn-primary {
+ background: linear-gradient(135deg, #1890ff, #40a9ff);
+ color: #fff;
+ border-color: #1890ff;
+ }
+
+ .btn-primary:hover { background: linear-gradient(135deg, #096dd9, #1890ff); }
+
+ /* ===== 右侧 AI Agent 面板 ===== */
+ .ai-panel {
+ width: 480px;
+ display: flex;
+ flex-direction: column;
+ background: #fff;
+ box-shadow: -2px 0 12px rgba(0,0,0,0.04);
+ }
+
+ .ai-panel-header {
+ padding: 16px 20px 0;
+ border-bottom: 1px solid #f0f0f0;
+ background: #fff;
+ flex-shrink: 0;
+ }
+
+ .ai-panel-title {
+ font-size: 15px;
+ font-weight: 600;
+ color: #1a1a2e;
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ margin-bottom: 14px;
+ }
+
+ .ai-badge {
+ background: linear-gradient(135deg, #667eea, #764ba2);
+ color: #fff;
+ font-size: 10px;
+ padding: 2px 8px;
+ border-radius: 10px;
+ font-weight: 500;
+ letter-spacing: 0.5px;
+ }
+
+ .ai-tabs { display: flex; gap: 0; }
+
+ .ai-tab {
+ flex: 1;
+ text-align: center;
+ padding: 10px 0;
+ font-size: 13px;
+ color: #8c8c8c;
+ cursor: pointer;
+ position: relative;
+ transition: all 0.25s ease;
+ font-weight: 400;
+ background: transparent;
+ border: none;
+ outline: none;
+ }
+
+ .ai-tab:hover { color: #555; }
+
+ .ai-tab.active {
+ color: #1890ff;
+ font-weight: 500;
+ }
+
+ .ai-tab.active::after {
+ content: '';
+ position: absolute;
+ bottom: 0;
+ left: 50%;
+ transform: translateX(-50%);
+ width: 32px;
+ height: 2.5px;
+ background: linear-gradient(90deg, #1890ff, #40a9ff);
+ border-radius: 2px;
+ }
+
+ .tab-icon { margin-right: 4px; font-size: 14px; }
+
+ .ai-panel-content {
+ flex: 1;
+ overflow-y: auto;
+ padding: 16px 20px;
+ background: #fafbfc;
+ }
+
+ .tab-content { display: none; }
+ .tab-content.active { display: block; }
+
+ .ai-suggestion {
+ background: linear-gradient(135deg, #f0f5ff 0%, #e8f4fd 100%);
+ border: 1px solid #d6e4ff;
+ border-radius: 8px;
+ padding: 16px;
+ margin-bottom: 12px;
+ }
+
+ .ai-suggestion-header {
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ margin-bottom: 10px;
+ }
+
+ .ai-source { font-size: 11px; color: #8c8c8c; display: flex; align-items: center; gap: 4px; }
+
+ .confidence-badge { font-size: 11px; padding: 2px 8px; border-radius: 10px; background: #fff; color: #52c41a; font-weight: 500; }
+ .confidence-badge.low { color: #faad14; }
+
+ .ai-reply-text { font-size: 13px; color: #333; line-height: 1.7; }
+
+ /* ===== 历史相似工单 ===== */
+ .history-header {
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ margin-bottom: 16px;
+ padding-bottom: 12px;
+ border-bottom: 1px dashed #e8e8e8;
+ }
+
+ .history-count { font-size: 13px; color: #666; }
+ .history-count strong { color: #1890ff; font-weight: 600; }
+
+ .history-sort-info { font-size: 11px; color: #999; margin-top: 2px; }
+
+ .history-refresh {
+ display: flex;
+ align-items: center;
+ gap: 4px;
+ font-size: 12px;
+ color: #1890ff;
+ cursor: pointer;
+ padding: 4px 10px;
+ border-radius: 4px;
+ border: 1px solid #d6e4ff;
+ background: #f0f5ff;
+ transition: all 0.2s;
+ }
+
+ .history-refresh:hover { background: #d6e4ff; }
+
+ .similarity-card {
+ background: #fff;
+ border: 1px solid #e8e8e8;
+ border-radius: 8px;
+ margin-bottom: 12px;
+ overflow: hidden;
+ transition: all 0.25s ease;
+ position: relative;
+ }
+
+ .similarity-card::before {
+ content: '';
+ position: absolute;
+ left: 0; top: 0; bottom: 0;
+ width: 3px;
+ border-radius: 0 2px 2px 0;
+ }
+
+ .similarity-card.high::before { background: #52c41a; }
+ .similarity-card.medium::before { background: #faad14; }
+
+ .similarity-card:hover {
+ border-color: #91d5ff;
+ box-shadow: 0 2px 8px rgba(24,144,255,0.08);
+ }
+
+ .card-top {
+ display: flex;
+ align-items: center;
+ padding: 12px 14px 8px;
+ gap: 10px;
+ }
+
+ .similarity-score {
+ width: 42px;
+ height: 42px;
+ border-radius: 50%;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ font-size: 13px;
+ font-weight: 700;
+ flex-shrink: 0;
+ }
+
+ .score-high { background: linear-gradient(135deg, #f6ffed, #d9f7be); color: #52c41a; border: 2px solid #b7eb8f; }
+ .score-medium { background: linear-gradient(135deg, #fffbe6, #fff1b8); color: #faad14; border: 2px solid #ffe58f; }
+
+ .card-info { flex: 1; min-width: 0; }
+
+ .card-title-row {
+ display: flex;
+ align-items: center;
+ gap: 8px;
+ margin-bottom: 4px;
+ }
+
+ .card-title {
+ font-size: 13px;
+ font-weight: 500;
+ color: #333;
+ white-space: nowrap;
+ overflow: hidden;
+ text-overflow: ellipsis;
+ }
+
+ /* 工单号 + 点赞/踩 */
+ .card-id-row {
+ display: flex;
+ align-items: center;
+ gap: 10px;
+ }
+
+ .card-id {
+ font-size: 11px;
+ color: #1890ff;
+ cursor: pointer;
+ white-space: nowrap;
+ text-decoration: none;
+ font-weight: 400;
+ transition: color 0.2s;
+ }
+
+ .card-id:hover { color: #096dd9; text-decoration: underline; }
+
+ .vote-group {
+ display: inline-flex;
+ align-items: center;
+ gap: 0;
+ margin-left: auto;
+ }
+
+ .vote-btn {
+ display: inline-flex;
+ align-items: center;
+ gap: 3px;
+ padding: 2px 8px;
+ border-radius: 4px;
+ font-size: 11px;
+ cursor: pointer;
+ border: 1px solid #e8e8e8;
+ background: #fafafa;
+ color: #8c8c8c;
+ transition: all 0.2s;
+ user-select: none;
+ }
+
+ .vote-btn:hover { border-color: #d9d9d9; }
+
+ .vote-btn.like:hover { color: #52c41a; border-color: #b7eb8f; background: #f6ffed; }
+ .vote-btn.like.active { color: #52c41a; border-color: #52c41a; background: #f6ffed; }
+
+ .vote-btn.dislike:hover { color: #ff4d4f; border-color: #ffa39e; background: #fff1f0; }
+ .vote-btn.dislike.active { color: #ff4d4f; border-color: #ff4d4f; background: #fff1f0; }
+
+ .vote-count { font-weight: 600; }
+
+ .vote-sep {
+ width: 1px;
+ height: 14px;
+ background: #e8e8e8;
+ margin: 0 2px;
+ }
+
+ .card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+ .card-tag { font-size: 11px; padding: 1px 6px; border-radius: 3px; font-weight: 400; }
+
+ .tag-resolved { background: #f6ffed; color: #52c41a; }
+ .tag-nps { background: #f9f0ff; color: #722ed1; }
+ .tag-time { background: #fafafa; color: #8c8c8c; }
+
+ .card-desc {
+ padding: 0 14px;
+ font-size: 12px;
+ color: #8c8c8c;
+ line-height: 1.5;
+ white-space: nowrap;
+ overflow: hidden;
+ text-overflow: ellipsis;
+ margin-bottom: 8px;
+ }
+
+ .card-reply {
+ margin: 0 14px 10px;
+ background: #fafbfc;
+ border: 1px solid #f0f0f0;
+ border-radius: 6px;
+ overflow: hidden;
+ }
+
+ .reply-toggle {
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ padding: 8px 12px;
+ font-size: 12px;
+ color: #666;
+ cursor: pointer;
+ user-select: none;
+ }
+
+ .reply-toggle-label { display: flex; align-items: center; gap: 4px; }
+
+ .reply-toggle-icon { transition: transform 0.2s; font-size: 10px; }
+ .reply-toggle.expanded .reply-toggle-icon { transform: rotate(180deg); }
+
+ .reply-content {
+ padding: 0 12px 12px;
+ font-size: 12px;
+ color: #555;
+ line-height: 1.7;
+ border-top: 1px dashed #e8e8e8;
+ padding-top: 10px;
+ }
+
+ .card-actions { display: flex; gap: 8px; padding: 0 14px 12px; }
+
+ .action-btn {
+ display: inline-flex;
+ align-items: center;
+ justify-content: center;
+ gap: 4px;
+ padding: 6px 14px;
+ font-size: 12px;
+ border-radius: 4px;
+ cursor: pointer;
+ transition: all 0.2s;
+ border: 1px solid #d9d9d9;
+ background: #fff;
+ color: #555;
+ font-weight: 400;
+ }
+
+ .action-btn:hover { border-color: #1890ff; color: #1890ff; background: #f0f5ff; }
+
+ .action-btn.primary { background: linear-gradient(135deg, #1890ff, #40a9ff); color: #fff; border-color: #1890ff; }
+ .action-btn.primary:hover { background: linear-gradient(135deg, #096dd9, #1890ff); }
+
+ .action-btn.outline { background: transparent; border-color: #1890ff; color: #1890ff; }
+ .action-btn.outline:hover { background: #e8f4fd; }
+
+ .empty-state { text-align: center; padding: 48px 24px; }
+ .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.6; }
+ .empty-text { font-size: 13px; color: #999; }
+ .empty-action { margin-top: 16px; font-size: 12px; color: #1890ff; cursor: pointer; }
+
+ .ai-panel-content::-webkit-scrollbar { width: 6px; }
+ .ai-panel-content::-webkit-scrollbar-track { background: transparent; }
+ .ai-panel-content::-webkit-scrollbar-thumb { background: #d9d9d9; border-radius: 3px; }
+ .ai-panel-content::-webkit-scrollbar-thumb:hover { background: #bfbfbf; }
+
+ .watermark { position: fixed; bottom: 20px; right: 30px; font-size: 11px; color: #ccc; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+
+<div class="mockup-wrapper">
+  <!-- 顶部导航 -->
+  <div class="top-bar">
+    <div class="logo">
+      <div class="logo-icon">✦</div>
+      聚星工作台
+    </div>
+    <div class="top-bar-nav">
+      <span>工单中心</span>
+      <span class="active">工作台</span>
+      <span>数据看板</span>
+      <span>知识库</span>
+    </div>
+    <div class="top-bar-right">
+      <span style="color:rgba(255,255,255,0.5);font-size:12px;">🔔</span>
+      <span style="color:rgba(255,255,255,0.5);font-size:12px;">⚙️</span>
+      <div class="avatar">李</div>
+    </div>
+  </div>
+
+  <div class="breadcrumb">
+    工单中心 <span>›</span> 工单列表 <span>›</span> <span class="current">工单详情 #TK2026042100847</span>
+  </div>
+
+  <div class="main-content">
+    <!-- ===== 左侧工单详情 ===== -->
+    <div class="ticket-detail">
+      <div class="ticket-scroll">
+        <div class="ticket-header">
+          <span class="ticket-id-badge">TK2026042100847</span>
+          <div class="ticket-title">染色仙玉扣除了但是锦衣没有保存染色方案</div>
+        </div>
+
+        <div class="ticket-meta">
+          <div class="meta-item">
+            <span class="meta-label">游戏：</span>
+            <span class="tag tag-game">梦幻西游</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">分类：</span>
+            <span class="tag tag-category">道具/外观异常</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">来源：</span>
+            <span>游戏内提交</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">提交时间：</span>
+            <span>2026-04-21 15:32</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">玩家：</span>
+            <span>剑***客 (ID: 8837****)</span>
+          </div>
+        </div>
+
+        <div class="ticket-body">
+          <div class="section-title">问题描述</div>
+          <div class="ticket-desc">
+            玩家反馈在进行斗战胜佛武器锦衣染色时，使用了高级染色方案并扣除了500仙玉，但染色完成后发现方案没有保存，重新登录后染色效果消失，变回原皮。玩家仙玉已扣除但染色未生效，要求恢复染色效果或退还仙玉。
+          </div>
+        </div>
+
+        <div class="chat-history">
+          <div class="section-title">对话记录</div>
+
+          <div class="chat-item">
+            <div class="chat-avatar player">玩</div>
+            <div class="chat-bubble">
+              <div class="chat-name">玩家 · 15:32</div>
+              <div class="chat-content">我昨天给斗战胜佛锦衣染色，花了500仙玉选了高级方案，结果今天上线发现染色没了，变回原来的样子了！仙玉扣了染色也没了，你们看看怎么回事？</div>
+            </div>
+          </div>
+
+          <div class="chat-item agent">
+            <div class="chat-avatar agent">AI</div>
+            <div class="chat-bubble">
+              <div class="chat-name">AI Agent 推荐回复 · 15:33</div>
+              <div class="chat-content">您好，关于锦衣染色问题，请您提供以下信息：1. 您的角色ID；2. 染色操作的具体时间；3. 是否有截图留存。我们将尽快为您核实处理。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 左侧底部回复区 -->
+      <div class="reply-area-left">
+        <textarea class="reply-textarea" placeholder="输入回复内容，或从右侧历史工单复制/插入回复..."></textarea>
+        <div class="reply-actions">
+          <button class="btn">存为草稿</button>
+          <button class="btn btn-primary">发送回复</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 右侧 AI Agent 面板 ===== -->
+    <div class="ai-panel">
+      <div class="ai-panel-header">
+        <div class="ai-panel-title">
+           
+          <span class="ai-badge"> </span>
+        </div>
+        <div class="ai-tabs">
+          <button class="ai-tab" onclick="switchTab('recommend')">
+            <span class="tab-icon">📌</span>基本信息
+          </button>
+          <button class="ai-tab" onclick="switchTab('knowledge')">
+            <span class="tab-icon">🤖</span>AI Agent
+          </button>
+          <button class="ai-tab active" onclick="switchTab('history')">
+            <span class="tab-icon">📋</span>历史相似工单
+          </button>
+          <button class="ai-tab" onclick="switchTab('tools')">
+            <span class="tab-icon">📚</span>知识库
+          </button>
+        </div>
+      </div>
+
+      <div class="ai-panel-content">
+        <!-- 基本信息 Tab -->
+        <div id="tab-recommend" class="tab-content">
+          <div style="padding:20px 0;">
+            <div class="section-title" style="margin-bottom:16px;">工单基本信息</div>
+            <div style="font-size:13px;color:#666;line-height:2;">
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5;">
+                <span style="color:#999;">工单编号</span><span>TK2026042100847</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5;">
+                <span style="color:#999;">游戏</span><span>梦幻西游</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5;">
+                <span style="color:#999;">问题分类</span><span>道具/外观异常</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5;">
+                <span style="color:#999;">来源</span><span>游戏内提交</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f5f5f5;">
+                <span style="color:#999;">优先级</span><span style="color:#fa8c16;">中</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;padding:6px 0;">
+                <span style="color:#999;">处理人</span><span>李小文</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Agent Tab -->
+        <div id="tab-knowledge" class="tab-content">
+          <div class="ai-suggestion">
+            <div class="ai-suggestion-header">
+              <span class="ai-source">🤖 基于知识库生成</span>
+              <span class="confidence-badge low">置信度 62%</span>
+            </div>
+            <div class="ai-reply-text">您好，关于锦衣染色问题，请您提供角色ID和操作时间，我们将尽快核实处理。</div>
+          </div>
+          <div style="text-align:center;padding:12px 0;font-size:12px;color:#999;">
+            💡 知识库内容可能不完整，建议参考历史相似工单获取更准确的回复
+          </div>
+        </div>
+
+        <!-- 历史相似工单 Tab（激活） -->
+        <div id="tab-history" class="tab-content active">
+          <div class="history-header">
+            <div>
+              <span class="history-count">共找到 <strong>5</strong> 条相似工单</span>
+              <div class="history-sort-info">按点赞数排序，点赞越多排名越靠前</div>
+            </div>
+            <span class="history-refresh">↻ 重新检索</span>
+          </div>
+
+          <!-- 卡片1 — 点赞最多 TOP1 -->
+          <div class="similarity-card high">
+            <div class="card-top">
+              <div class="similarity-score score-high">96%</div>
+              <div class="card-info">
+                <div class="card-title-row">
+                  <span class="card-title">染色仙玉扣除了但方案未保存</span>
+                </div>
+                <div class="card-id-row">
+                  <a class="card-id" href="#">TK00823</a>
+                  <div class="vote-group">
+                    <span class="vote-btn like active" onclick="vote(this,'like')">
+                      👍 <span class="vote-count">12</span>
+                    </span>
+                    <div class="vote-sep"></div>
+                    <span class="vote-btn dislike" onclick="vote(this,'dislike')">
+                      👎 <span class="vote-count">1</span>
+                    </span>
+                  </div>
+                </div>
+                <div class="card-tags" style="margin-top:6px;">
+                  <span class="card-tag tag-resolved">✓ 已解决</span>
+                  <span class="card-tag tag-nps">满意度 5</span>
+                  <span class="card-tag tag-time">2026-04-18</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">玩家反馈使用高级染色方案扣除仙玉后，染色效果未保存，重新登录后恢复原皮...</div>
+            <div class="card-reply">
+              <div class="reply-toggle expanded" onclick="toggleReply(this)">
+                <span class="reply-toggle-label">💬 参考回复</span>
+                <span class="reply-toggle-icon">▼</span>
+              </div>
+              <div class="reply-content">
+                您好，经核实染色仙玉扣除但方案未保存的问题，已为您反馈技术团队处理。由于系统数据同步延迟导致，预计24小时内修复。您的仙玉将原路返还至账户，染色方案也会重新生效。给您带来不便敬请谅解。
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="action-btn primary">📋 复制回复</button>
+              <button class="action-btn outline">✏️ 插入回复框</button>
+              <button class="action-btn">🔗 查看原工单</button>
+            </div>
+          </div>
+
+          <!-- 卡片2 — 点赞 TOP2 -->
+          <div class="similarity-card high">
+            <div class="card-top">
+              <div class="similarity-score score-high">91%</div>
+              <div class="card-info">
+                <div class="card-title-row">
+                  <span class="card-title">锦衣染色保存后显示原皮</span>
+                </div>
+                <div class="card-id-row">
+                  <a class="card-id" href="#">TK00756</a>
+                  <div class="vote-group">
+                    <span class="vote-btn like" onclick="vote(this,'like')">
+                      👍 <span class="vote-count">8</span>
+                    </span>
+                    <div class="vote-sep"></div>
+                    <span class="vote-btn dislike" onclick="vote(this,'dislike')">
+                      👎 <span class="vote-count">2</span>
+                    </span>
+                  </div>
+                </div>
+                <div class="card-tags" style="margin-top:6px;">
+                  <span class="card-tag tag-resolved">✓ 已解决</span>
+                  <span class="card-tag tag-nps">满意度 4</span>
+                  <span class="card-tag tag-time">2026-04-10</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">玩家进行锦衣染色后保存成功，但重新登录发现染色效果消失，显示为原皮状态...</div>
+            <div class="card-reply">
+              <div class="reply-toggle" onclick="toggleReply(this)">
+                <span class="reply-toggle-label">💬 参考回复</span>
+                <span class="reply-toggle-icon">▼</span>
+              </div>
+              <div class="reply-content" style="display:none;">
+                您好，关于锦衣染色后效果消失的问题，请尝试以下操作：1. 退出游戏重新登录；2. 在锦衣界面点击「重新加载」按钮。如果问题仍未解决，请提供角色ID和染色时间，我们将为您进一步核查处理。
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="action-btn primary">📋 复制回复</button>
+              <button class="action-btn outline">✏️ 插入回复框</button>
+              <button class="action-btn">🔗 查看原工单</button>
+            </div>
+          </div>
+
+          <!-- 卡片3 — 点赞 TOP3 -->
+          <div class="similarity-card medium">
+            <div class="card-top">
+              <div class="similarity-score score-medium">84%</div>
+              <div class="card-info">
+                <div class="card-title-row">
+                  <span class="card-title">高级染色方案扣除仙玉后未生效</span>
+                </div>
+                <div class="card-id-row">
+                  <a class="card-id" href="#">TK00689</a>
+                  <div class="vote-group">
+                    <span class="vote-btn like" onclick="vote(this,'like')">
+                      👍 <span class="vote-count">6</span>
+                    </span>
+                    <div class="vote-sep"></div>
+                    <span class="vote-btn dislike active" onclick="vote(this,'dislike')">
+                      👎 <span class="vote-count">5</span>
+                    </span>
+                  </div>
+                </div>
+                <div class="card-tags" style="margin-top:6px;">
+                  <span class="card-tag tag-resolved">✓ 已解决</span>
+                  <span class="card-tag tag-nps">满意度 5</span>
+                  <span class="card-tag tag-time">2026-03-28</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">玩家购买高级染色方案并扣除仙玉后，染色效果未能正常显示，要求处理...</div>
+            <div class="card-reply">
+              <div class="reply-toggle" onclick="toggleReply(this)">
+                <span class="reply-toggle-label">💬 参考回复</span>
+                <span class="reply-toggle-icon">▼</span>
+              </div>
+              <div class="reply-content" style="display:none;">
+                您好，已为您核查染色记录。确认您的高级染色方案已成功购买但效果未正常加载。已手动为您重新加载染色方案，请重新登录查看。仙玉不会重复扣除，如有其他问题请随时联系我们。
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="action-btn primary">📋 复制回复</button>
+              <button class="action-btn outline">✏️ 插入回复框</button>
+              <button class="action-btn">🔗 查看原工单</button>
+            </div>
+          </div>
+
+          <!-- 卡片4 — 点赞少 TOP4 -->
+          <div class="similarity-card medium">
+            <div class="card-top">
+              <div class="similarity-score score-medium">79%</div>
+              <div class="card-info">
+                <div class="card-title-row">
+                  <span class="card-title">武器染色后数据丢失</span>
+                </div>
+                <div class="card-id-row">
+                  <a class="card-id" href="#">TK00612</a>
+                  <div class="vote-group">
+                    <span class="vote-btn like" onclick="vote(this,'like')">
+                      👍 <span class="vote-count">3</span>
+                    </span>
+                    <div class="vote-sep"></div>
+                    <span class="vote-btn dislike" onclick="vote(this,'dislike')">
+                      👎 <span class="vote-count">7</span>
+                    </span>
+                  </div>
+                </div>
+                <div class="card-tags" style="margin-top:6px;">
+                  <span class="card-tag tag-resolved">✓ 已解决</span>
+                  <span class="card-tag tag-nps">满意度 3</span>
+                  <span class="card-tag tag-time">2026-03-15</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">玩家反馈武器染色完成后，过一段时间染色效果消失，需要重新操作...</div>
+            <div class="card-reply">
+              <div class="reply-toggle" onclick="toggleReply(this)">
+                <span class="reply-toggle-label">💬 参考回复</span>
+                <span class="reply-toggle-icon">▼</span>
+              </div>
+              <div class="reply-content" style="display:none;">
+                您好，关于武器染色效果消失的问题，目前已知该情况与服务器数据同步有关。技术团队正在修复中，您的情况已登记，修复后将自动恢复染色效果。预计修复时间：48小时内。
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="action-btn primary">📋 复制回复</button>
+              <button class="action-btn outline">✏️ 插入回复框</button>
+              <button class="action-btn">🔗 查看原工单</button>
+            </div>
+          </div>
+
+          <!-- 卡片5 — 踩最多 TOP5 -->
+          <div class="similarity-card medium">
+            <div class="card-top">
+              <div class="similarity-score score-medium">72%</div>
+              <div class="card-info">
+                <div class="card-title-row">
+                  <span class="card-title">仙玉扣除异常-染色功能</span>
+                </div>
+                <div class="card-id-row">
+                  <a class="card-id" href="#">TK00534</a>
+                  <div class="vote-group">
+                    <span class="vote-btn like" onclick="vote(this,'like')">
+                      👍 <span class="vote-count">2</span>
+                    </span>
+                    <div class="vote-sep"></div>
+                    <span class="vote-btn dislike" onclick="vote(this,'dislike')">
+                      👎 <span class="vote-count">9</span>
+                    </span>
+                  </div>
+                </div>
+                <div class="card-tags" style="margin-top:6px;">
+                  <span class="card-tag tag-resolved">✓ 已解决</span>
+                  <span class="card-tag tag-nps">满意度 4</span>
+                  <span class="card-tag tag-time">2026-02-22</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-desc">玩家进行染色操作时仙玉被扣除但染色操作未完成，要求退还仙玉...</div>
+            <div class="card-reply">
+              <div class="reply-toggle" onclick="toggleReply(this)">
+                <span class="reply-toggle-label">💬 参考回复</span>
+                <span class="reply-toggle-icon">▼</span>
+              </div>
+              <div class="reply-content" style="display:none;">
+                您好，已为您核查仙玉扣除记录。确认您的500仙玉在染色操作中被异常扣除，已提交退还申请，预计1-3个工作日仙玉将退还至您的账户。给您带来不便敬请谅解。
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="action-btn primary">📋 复制回复</button>
+              <button class="action-btn outline">✏️ 插入回复框</button>
+              <button class="action-btn">🔗 查看原工单</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 知识库 Tab -->
+        <div id="tab-tools" class="tab-content">
+          <div style="padding:20px 0;">
+            <div style="font-size:13px;color:#666;margin-bottom:12px;">知识库条目：</div>
+            <div class="empty-state" style="padding:24px;">
+              <div class="empty-text">知识库中未找到完全匹配的条目</div>
+              <div class="empty-action">+ 提交知识库补充建议</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="watermark">聚星工作台 · UI 设计稿 · v1.0 · 2026.04.21</div>
+
+<script>
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.ai-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tabName).classList.add('active');
+  const tabs = document.querySelectorAll('.ai-tab');
+  const tabMap = { 'recommend': 0, 'knowledge': 1, 'history': 2, 'tools': 3 };
+  tabs[tabMap[tabName]].classList.add('active');
+}
+
+function toggleReply(el) {
+  const content = el.nextElementSibling;
+  const isExpanded = el.classList.contains('expanded');
+  if (isExpanded) {
+    el.classList.remove('expanded');
+    content.style.display = 'none';
+  } else {
+    el.classList.add('expanded');
+    content.style.display = 'block';
+  }
+}
+
+function vote(el, type) {
+  const group = el.closest('.vote-group');
+  const likeBtn = group.querySelector('.vote-btn.like');
+  const dislikeBtn = group.querySelector('.vote-btn.dislike');
+  const likeCount = likeBtn.querySelector('.vote-count');
+  const dislikeCount = dislikeBtn.querySelector('.vote-count');
+
+  if (type === 'like') {
+    if (likeBtn.classList.contains('active')) {
+      likeBtn.classList.remove('active');
+      likeCount.textContent = parseInt(likeCount.textContent) - 1;
+    } else {
+      likeBtn.classList.add('active');
+      likeCount.textContent = parseInt(likeCount.textContent) + 1;
+      if (dislikeBtn.classList.contains('active')) {
+        dislikeBtn.classList.remove('active');
+        dislikeCount.textContent = parseInt(dislikeCount.textContent) - 1;
+      }
+    }
+  } else {
+    if (dislikeBtn.classList.contains('active')) {
+      dislikeBtn.classList.remove('active');
+      dislikeCount.textContent = parseInt(dislikeCount.textContent) - 1;
+    } else {
+      dislikeBtn.classList.add('active');
+      dislikeCount.textContent = parseInt(dislikeCount.textContent) + 1;
+      if (likeBtn.classList.contains('active')) {
+        likeBtn.classList.remove('active');
+        likeCount.textContent = parseInt(likeCount.textContent) - 1;
+      }
+    }
+  }
+}
+</script>
+
+</body>
+</html>
